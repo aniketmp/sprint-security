@@ -1,6 +1,6 @@
 package org.aniket.authentication.provider;
 
-import org.aniket.authentication.type.AccessTokenBasedAuthenticationToken;
+import org.aniket.authentication.type.ApiKeyBasedAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,11 +13,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TokenBasedAuthenticationProvider implements AuthenticationProvider{
+public class ApiKeyBasedAuthenticationProvider implements AuthenticationProvider{
 
 	
-	@Value("${api.accessToken}")
-	private String accessToken;
+	@Value("${api.key}")
+	private String apiKey;
 	
 	@Autowired
 	private UserDetailsService userDetailsService;
@@ -26,26 +26,26 @@ public class TokenBasedAuthenticationProvider implements AuthenticationProvider{
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		
-		AccessTokenBasedAuthenticationToken auth=(AccessTokenBasedAuthenticationToken) authentication;
-		String authToken=auth.getAuthenticationToken();
-		if(authToken==null)
+		ApiKeyBasedAuthenticationToken auth=(ApiKeyBasedAuthenticationToken) authentication;
+		String userProvidedKey=auth.getApiKey();
+		if(userProvidedKey==null)
 		{
 			return null; //In this case this cannot decide the authentication.
 		}
-		String authKey=auth.getPrincipal().toString();
-		if(accessToken.equals(authToken))
+		String userId=auth.getPrincipal().toString();
+		if(apiKey.equals(userProvidedKey))
 		{
-			UserDetails userDetails=userDetailsService.loadUserByUsername(authKey);
-			Authentication authenticatedUser=new AccessTokenBasedAuthenticationToken(userDetails, null,userDetails.getAuthorities());
+			UserDetails userDetails=userDetailsService.loadUserByUsername(userId);
+			Authentication authenticatedUser=new ApiKeyBasedAuthenticationToken(userDetails, null,userDetails.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
 			return authenticatedUser;
 		}
-		throw new BadCredentialsException("API token not matching!");
+		throw new BadCredentialsException("API key is not matching!");
 	}
 
 	@Override
 	public boolean supports(Class<?> authentication) {
-		return AccessTokenBasedAuthenticationToken.class.equals(authentication);
+		return ApiKeyBasedAuthenticationToken.class.equals(authentication);
 	}
 
 }

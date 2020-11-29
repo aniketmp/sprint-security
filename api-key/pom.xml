@@ -7,6 +7,6 @@
 		<artifactId>spring-security</artifactId>
 		<version>1.0.0</version>		
 	</parent>
-	<artifactId>access-token</artifactId>
+	<artifactId>api-key</artifactId>
 	<description>Spring security with access token based authentication</description>
 </project>

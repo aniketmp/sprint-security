@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.aniket.authentication.type.AccessTokenBasedAuthenticationToken;
+import org.aniket.authentication.type.ApiKeyBasedAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
-public class AuthenticationTokenFilter extends OncePerRequestFilter{
+public class ApiKeyTokenFilter extends OncePerRequestFilter{
 
 	@Autowired
 	AuthenticationManager manager;
@@ -28,14 +28,15 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter{
 			throws ServletException, IOException {
 		
 		
-		String accessKey=request.getHeader("access-key");
-		String accessToken=request.getHeader("access-token");
-		if(accessKey == null || accessToken == null)
+		String userId=request.getHeader("user-id");
+		String apiKey=request.getHeader("api-key");
+		
+		if(userId == null || apiKey == null)
 		{
 			filterChain.doFilter(request, response);
 			return;
 		}
-		AccessTokenBasedAuthenticationToken authentication=new AccessTokenBasedAuthenticationToken(accessKey,accessToken);
+		ApiKeyBasedAuthenticationToken authentication=new ApiKeyBasedAuthenticationToken(userId,apiKey);
 		Authentication auth=manager.authenticate(authentication);
 		if(auth.isAuthenticated())
 		{

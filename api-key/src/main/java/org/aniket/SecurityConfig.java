@@ -1,7 +1,7 @@
 package org.aniket;
 
-import org.aniket.authentication.filter.AuthenticationTokenFilter;
-import org.aniket.authentication.provider.TokenBasedAuthenticationProvider;
+import org.aniket.authentication.filter.ApiKeyTokenFilter;
+import org.aniket.authentication.provider.ApiKeyBasedAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +24,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     
     
     @Autowired
-    private TokenBasedAuthenticationProvider tokenBasedAuthenticationProvider;
+    private ApiKeyBasedAuthenticationProvider tokenBasedAuthenticationProvider;
     
     @Autowired
-    private AuthenticationTokenFilter authenticationTokenFilter;
+    private ApiKeyTokenFilter authenticationTokenFilter;
     
 	
     @Bean
