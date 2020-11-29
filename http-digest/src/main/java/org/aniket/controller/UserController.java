@@ -16,12 +16,7 @@ public class UserController {
 		return "Hello World!";
 	}
 	
-	/* 
-	curl --location --request GET 'http://localhost:8080/basic' \
-	--header 'Authorization: Basic YWRtaW46YWRtaW4='
-	*/
-	
-	@GetMapping("/basic")
+	@GetMapping("/digest")
 	public Object healthCheckToken() {
 		return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}

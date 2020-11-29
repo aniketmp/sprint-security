@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 
 
 @Configuration
@@ -34,15 +36,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         return encoder;
     }
     
+    
+    @Bean
+    DigestAuthenticationEntryPoint digestEntryPoint() {
+        DigestAuthenticationEntryPoint bauth = new DigestAuthenticationEntryPoint();
+        bauth.setRealmName("Digest WF Realm");
+        bauth.setKey("MySecureKey");
+        return bauth;
+    }
+    @Bean
+    DigestAuthenticationFilter digestAuthenticationFilter() throws Exception {
+        DigestAuthenticationFilter digestAuthenticationFilter = new DigestAuthenticationFilter();
+        digestAuthenticationFilter.setUserDetailsService(userDetailsService());
+        digestAuthenticationFilter.setAuthenticationEntryPoint(digestEntryPoint());        
+        return digestAuthenticationFilter;
+    }   
+    
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
+	   http.addFilter(digestAuthenticationFilter())              			   // register digest entry point
+          .exceptionHandling().authenticationEntryPoint(digestEntryPoint());       // on exception ask for digest authentication
+		
 		http.authorizeRequests()
          	.antMatchers(HttpMethod.GET, "/hello").permitAll()
-         	.anyRequest().authenticated()
-         	
-     	.and()
-			.httpBasic();
+         	.anyRequest().authenticated();
 		
 		http
 			.sessionManagement()
